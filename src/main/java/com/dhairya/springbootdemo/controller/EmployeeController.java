@@ -3,6 +3,7 @@ package com.dhairya.springbootdemo.controller;
 import com.dhairya.springbootdemo.model.Employee;
 import com.dhairya.springbootdemo.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,14 +26,25 @@ public class EmployeeController {
 
     //READ ALL
     @GetMapping
-    public List<Employee> getAllEmployees(){
-        return employeeService.getAllEmployees();
+    public Page<Employee> getAllEmployees(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String sortDir
+    ) {
+        return employeeService.getAllEmployees(page, size, sortBy, sortDir);
     }
 
     //READ ONE
     @GetMapping("/{id}")
     public Employee getEmployeeById(@PathVariable Integer id){
         return  employeeService.getEmployeeById(id);
+    }
+
+    // Search by department
+    @GetMapping("/search")
+    public List<Employee> findByDepartment(@RequestParam String department) {
+        return employeeService.findByDepartment(department);
     }
 
     //UPDATE
@@ -45,9 +57,8 @@ public class EmployeeController {
     //DELETE
 
     @DeleteMapping("/{id}")
-    public String deleteEmployee(@PathVariable Integer id){
-        boolean deleted = employeeService.deleteEmployee(id);
-        return deleted ? "Employee deleted successfully!" : "Employee not found!";
+    public void deleteEmployee(@PathVariable Integer id) {
+        employeeService.deleteEmployee(id);
     }
 
 
