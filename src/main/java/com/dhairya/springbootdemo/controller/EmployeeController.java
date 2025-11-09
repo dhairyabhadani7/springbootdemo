@@ -1,21 +1,55 @@
 package com.dhairya.springbootdemo.controller;
 
 import com.dhairya.springbootdemo.model.Employee;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import com.dhairya.springbootdemo.service.EmployeeService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
 
 @RestController
+@RequestMapping("/employees")
 public class EmployeeController {
 
-    @GetMapping("/employee")
-    public Employee getEmployee(){
-        return new Employee(101,"Dhairya","IT");
+    @Autowired
+    private EmployeeService employeeService;
+
+
+    //CREATE
+    @PostMapping
+    public Employee createEMployee(@Validated  @RequestBody Employee emp){
+        return employeeService.addEmployee(emp);
     }
 
-    @PostMapping("/employee")
-    public String createEmployee(@RequestBody Employee emp){
-        return "Employee created: " + emp.getName() + " (" + emp.getDepartment() + ")";
+    //READ ALL
+    @GetMapping
+    public List<Employee> getAllEmployees(){
+        return employeeService.getAllEmployees();
     }
-}
+
+    //READ ONE
+    @GetMapping("/{id}")
+    public Employee getEmployeeById(@PathVariable Integer id){
+        return  employeeService.getEmployeeById(id);
+    }
+
+    //UPDATE
+    @PutMapping("/{id}")
+    public Employee updateEmployee(@PathVariable Integer id,@Validated @RequestBody Employee emp){
+        //System.out.println("Received in PUT: id=" + id + ", name=" + emp.getName() + ", dept=" + emp.getDepartment());
+        emp.setId(id);
+        return employeeService.updateEmployee(id,emp);
+    }
+    //DELETE
+
+    @DeleteMapping("/{id}")
+    public String deleteEmployee(@PathVariable Integer id){
+        boolean deleted = employeeService.deleteEmployee(id);
+        return deleted ? "Employee deleted successfully!" : "Employee not found!";
+    }
+
+
+    }
+
