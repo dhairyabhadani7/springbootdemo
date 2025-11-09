@@ -4,6 +4,10 @@ import com.dhairya.springbootdemo.exception.ResourceNotFoundException;
 import com.dhairya.springbootdemo.model.Employee;
 import com.dhairya.springbootdemo.repository.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PostMapping;
 
@@ -16,7 +20,7 @@ public class EmployeeService {
 //
 //    //CREATE
 //
-//    public Employee addEmpployee(Employee emp){
+//    public Employee addEmployee(Employee emp){
 //        employeeMap.put(emp.getId(),emp);
 //        return emp;
 //    }
@@ -59,8 +63,13 @@ public class EmployeeService {
     }
 
     // READ ALL
-    public List<Employee> getAllEmployees() {
-        return employeeRepository.findAll();
+    public Page<Employee> getAllEmployees(int page, int size, String sortBy, String sortDir) {
+        Sort sort = sortDir.equalsIgnoreCase("asc")
+                ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
+
+        Pageable pageable = PageRequest.of(page ,size ,sort);
+        return employeeRepository.findAll(pageable);
     }
 
     // READ ONE
@@ -79,14 +88,19 @@ public class EmployeeService {
 
 
     // DELETE
-    public boolean deleteEmployee(Integer id) {
-        if (employeeRepository.existsById(id)) {
-            employeeRepository.deleteById(id);
-            return true;
+    public void deleteEmployee(Integer id) {
+        if (!employeeRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Employee not found with id: " + id);
         }
-        return false;
+        employeeRepository.deleteById(id);
     }
 
-
-
+    // Search by department
+    public List<Employee> findByDepartment(String dept) {
+        return employeeRepository.findByDepartment(dept);
+    }
+    //Search by Department and Name
+    public List<Employee> findByDepartmentAndName(String dept, String name){
+        return employeeRepository.findByDepartmentAndName(dept,name);
+    }
 }
