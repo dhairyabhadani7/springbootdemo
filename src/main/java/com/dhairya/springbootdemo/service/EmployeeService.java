@@ -64,9 +64,7 @@ public class EmployeeService {
 
     // READ ALL
     public Page<Employee> getAllEmployees(int page, int size, String sortBy, String sortDir) {
-        Sort sort = sortDir.equalsIgnoreCase("asc")
-                ? Sort.by(sortBy).ascending()
-                : Sort.by(sortBy).descending();
+        Sort sort = sortDir.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
 
         Pageable pageable = PageRequest.of(page ,size ,sort);
         return employeeRepository.findAll(pageable);
