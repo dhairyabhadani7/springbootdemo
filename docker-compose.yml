@@ -14,6 +14,9 @@ services:
       - pgdata:/var/lib/postgresql/data
 
   springbootapp:
+    build:
+      context: /home/ubuntu/springbootdemo
+      dockerfile: Dockerfile
     image: springbootdemo:latest
     container_name: springboot_container
     ports:
